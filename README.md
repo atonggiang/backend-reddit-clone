@@ -1,6 +1,6 @@
 # Backend for Reddit clone
 
-This is backend providing API that can process user register, login, creating post and so on...
+Backend API for Reddit clone which has user login, posting, comment, etc...
 
 ## Installation
 
@@ -8,7 +8,7 @@ We assume that you have Python and Pip in your machine. If not then go install t
 
 This installation is for Window, other platform may have slightly different syntax.
 
-First you need to create a virtual machine
+First you need to create a virtual environment
 
 ```bash
 source> cd backend-reddit-clone
@@ -19,12 +19,12 @@ source/backend-reddit-clone> cd venv/Scripts
 Activate virtual machine (IMPORTANT!!)
 
 ```bash
-source/backend/venv/Scripts> activate
+source/backend-reddit-clone/venv/Scripts> activate
 ```
 
 Then you install django and other modules
 
-Remember to activate virtual machine.
+Remember to activate virtual environment.
 
 ```bash
 (venv) source/backend-reddit-clone> pip install -r requirements.txt
@@ -32,7 +32,7 @@ Remember to activate virtual machine.
 
 ## Migrate the database
 
-Remember to activate virtual machine
+Remember to activate virtual environment
 
 ```bash
 (venv) source/backend-reddit-clone> python manage.py makemigrations
