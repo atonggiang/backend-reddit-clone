@@ -18,9 +18,13 @@ class LoginSerializer(serializers.Serializer):
             'username': user.username
         }
 
+class ProfileSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255, required=False)
+    name = serializers.CharField(max_length=255, required=False)
+    age = serializers.IntegerField(required=False)
+    gender = serializers.CharField(max_length=1, required=False)
+
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
-    def register(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+    profile = ProfileSerializer(required=False)

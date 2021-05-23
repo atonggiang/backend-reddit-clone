@@ -14,17 +14,39 @@ def login_authentication(request, *args, **kwargs):
     refresh = RefreshToken.for_user(user)
     response = {
         'username': result.data['username'],
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
+        'token': str(refresh.access_token),
     }
     return Response(response, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def register_user(request, *args, **kwargs):
-    result = serializers.RegisterSerializer(data=request.data)
-    result.register(request.data)
+    register_data = serializers.RegisterSerializer(data=request.data)
+    register_data.is_valid()
+    profile_data = {}
+    if 'profile' in register_data.validated_data:
+        profile_data = register_data.validated_data.pop('profile')
+    user = models.User.objects.create_user(**register_data.validated_data)
+    profile = models.Profile.object.create_profile(user, **profile_data)
     response = {
-        'username': request.data['username'],
-        'password': request.data['password'],
+        'message': 'done',
     }
     return Response(response, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def edit_profile(request, *args, **kwargs):
+    edit_content = serializers.ProfileSerializer(data=request.data)
+    edit_content.is_valid()
+    user = models.User.objects.get(username=request.user)
+    user.profile = models.Profile(**edit_content.validated_data)
+    user.profile.save()
+    response = {
+        'message': 'done',
+    }
+    return Response(response, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def view_profile(request, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
+    profile_data = serializers.ProfileSerializer(user.profile)
+    return Response(profile_data.data, status=status.HTTP_200_OK)
+
