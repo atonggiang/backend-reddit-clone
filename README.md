@@ -35,7 +35,7 @@ Remember to activate virtual environment.
 Remember to activate virtual environment
 
 ```bash
-(venv) source/backend-reddit-clone> python manage.py makemigrations
+(venv) source/backend-reddit-clone> python manage.py makemigrations core
 (venv) source/backend-reddit-clone> python manage.py migrate
 ```
 

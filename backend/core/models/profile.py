@@ -28,7 +28,7 @@ class Profile(models.Model):
         choices=GENDER_CHOICE,
         blank=True
     )
-    age = models.PositiveSmallIntegerField(verbose_name='Age', blank=True, null=False)
+    age = models.PositiveSmallIntegerField(verbose_name='Age', blank=True, null=True)
     object = ProfileManager()
     def __str__(self):
         return self.user.username

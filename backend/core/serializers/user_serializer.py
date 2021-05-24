@@ -28,3 +28,7 @@ class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
     profile = ProfileSerializer(required=False)
+
+class SubSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=255, required=False)
