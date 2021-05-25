@@ -32,3 +32,6 @@ class RegisterSerializer(serializers.Serializer):
 class SubSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(max_length=255, required=False)
+
+class CommentSerializer(serializers.Serializer):
+    content = serializers.CharField(max_length=255)

@@ -12,4 +12,5 @@ class Post(VoteModel, models.Model):
         return self.title
     class Meta:
         db_table = "post"
-
+    def get_absolute_url(self):
+        return "localhost:8000/p/%i/" % self.id

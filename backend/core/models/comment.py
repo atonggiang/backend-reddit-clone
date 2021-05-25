@@ -11,3 +11,5 @@ class Comment(VoteModel, models.Model):
         return self.content
     class Meta:
         db_table = "comment"
+    def get_absolute_url(self):
+        return "localhost:8000/c/%i/" % self.id

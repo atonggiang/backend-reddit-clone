@@ -1,1 +1,1 @@
-from .user_view import login_authentication, register_user, edit_profile, view_profile, create_sub
+from .user_view import login_authentication, register_user, edit_profile, view_profile, create_sub, join_sub, leave_sub, comment_post, view_comment, view_sub, view_post, upvote_post, downvote_post, upvote_comment, downvote_comment, post_list,sub_list, comment_list, home
