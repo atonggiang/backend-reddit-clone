@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     #dependencies modules
     'rest_framework',
     'corsheaders',
+    'vote',
 
     #app
     'core.apps.CoreConfig',

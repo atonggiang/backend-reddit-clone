@@ -7,3 +7,5 @@ class Sub(models.Model):
     description = models.CharField(verbose_name='Description', max_length=255, blank=True)
     def __str__(self):
         return self.name
+    class Meta:
+        db_table = "sub"
