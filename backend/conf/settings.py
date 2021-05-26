@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'vote',
+    'mptt',
 
     #app
     'core.apps.CoreConfig',

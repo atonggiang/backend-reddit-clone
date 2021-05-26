@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .. import models
-from .. import serializers
+from . import models
+from . import serializers
 
 @api_view(['POST'])
 def login_authentication(request, *args, **kwargs):
@@ -93,24 +93,10 @@ def view_sub(request, sub_name, *args, **kwargs):
     posts = sub.post_set.all()
     posts_data = []
     for post in posts:
-        posts_data.append({
-            "author":post.user.username,
-            "title": post.title,
-            "content": post.content,
-            "status":post.get_user_status(user),
-            "total_vote_count": post.votes.count(),
-            "upvote_count": post.votes.count(0),
-            "downvote_count": post.votes.count(1),
-            "total_comment":post.comment_set.count(),
-            "link":post.get_absolute_url()
-            })
-    return Response({
-        "name":sub.name, 
-        "description":sub.description,
-        "members": sub.members.count(),
-        "status":sub.get_user_status(user),
-        "posts": posts_data
-        }, status=status.HTTP_200_OK)
+        data = post.info(user, [])
+        data.pop("comments")
+        posts_data.append(data)
+    return Response(sub.info(user, posts_data), status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def create_post(request, sub_name, *args, **kwargs):
@@ -129,26 +115,8 @@ def view_post(request, post_id, *args, **kwargs):
     comments = post.comment_set.all()
     comments_data = []
     for comment in comments:
-        comments_data.append({
-            "author": comment.user.username,
-            "content": comment.content,
-            "status":post.get_user_status(user),
-            "total_vote_count": comment.votes.count(),
-            "upvote_count": comment.votes.count(0),
-            "downvote_count": comment.votes.count(1),
-            "link": comment.get_absolute_url(),
-            })
-    return Response({
-        "author":post.user.username,
-        "title":post.title, 
-        "content":post.content,
-        "status":post.get_user_status(user),
-        "total_vote_count": post.votes.count(),
-        "upvote_count": post.votes.count(0),
-        "downvote_count": post.votes.count(1),
-        "total_comment":post.comment_set.count(),
-        "comments": comments_data,
-        }, status=status.HTTP_200_OK)
+        comments_data.append(comment.info(user))
+    return Response(post.info(user, comments_data), status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def upvote_post(request, post_id, *args, **kwargs):
@@ -180,13 +148,13 @@ def sub_list(request, *args, **kwargs):
     subs = user.subs_join.all()
     subs_data = []
     for sub in subs:
-        subs_data.append({
-            "name": sub.name,
-            "link":sub.get_absolute_url()
-            })
-    return Response({
-        "subs": subs_data
-        }, status=status.HTTP_200_OK)
+        data = sub.info(user, [])
+        data.pop('description')
+        data.pop('members')
+        data.pop('status')
+        data.pop('posts')
+        subs_data.append(data)
+    return Response(subs_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def all_sub(request, *args, **kwargs):
@@ -194,14 +162,12 @@ def all_sub(request, *args, **kwargs):
     subs = models.Sub.objects.all()
     subs_data = []
     for sub in subs:
-        subs_data.append({
-            "name": sub.name,
-            "status":sub.get_user_status(user),
-            "link":sub.get_absolute_url()
-            })
-    return Response({
-        "subs": subs_data
-        }, status=status.HTTP_200_OK)
+        data = sub.info(user, [])
+        data.pop('description')
+        data.pop('members')
+        data.pop('posts')
+        subs_data.append(data)
+    return Response(subs_data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -210,20 +176,10 @@ def post_list(request, *args, **kwargs):
     posts = user.post_set.all()
     posts_data = []
     for post in posts:
-        posts_data.append({
-            "author":post.user.username,
-            "title": post.title,
-            "content": post.content,
-            "status":post.get_user_status(user),
-            "total_vote_count": post.votes.count(),
-            "upvote_count": post.votes.count(0),
-            "downvote_count": post.votes.count(1),
-            "total_comment":post.comment_set.count(),
-            "link":post.get_absolute_url()
-            })
-    return Response({
-        "posts": posts_data
-        }, status=status.HTTP_200_OK)
+        data = post.info(user, [])
+        data.pop('comments')
+        posts_data.append(data)
+    return Response(posts_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def comment_list(request, *args, **kwargs):
@@ -231,18 +187,11 @@ def comment_list(request, *args, **kwargs):
     comments = user.comment_set.all()
     comments_data = []
     for comment in comments:
-        comments_data.append({
-            "author": comment.user.username,
-            "content": comment.content,
-            "status":comment.get_user_status(user),
-            "total_vote_count": comment.votes.count(),
-            "upvote_count": comment.votes.count(0),
-            "downvote_count": comment.votes.count(1),
-            "link": comment.get_absolute_url(),
-            })
-    return Response({
-        "comments": comments_data
-        }, status=status.HTTP_200_OK)
+        data = comment.info(user)
+        if "children_comment" in data:
+            data.pop("children_comment")
+        comments_data.append(data)
+    return Response(comments_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def home(request, *args, **kwargs):
@@ -253,21 +202,22 @@ def home(request, *args, **kwargs):
         posts = sub.post_set.all()
         posts_data = []
         for post in posts:
-            posts_data.append({
-                "author":post.user.username,
-                "title": post.title,
-                "content": post.content,
-                "status":post.get_user_status(user),
-                "total_vote_count": post.votes.count(),
-                "upvote_count": post.votes.count(0),
-                "downvote_count": post.votes.count(1),
-                "total_comment":post.comment_set.count(),
-                "link":post.get_absolute_url()
-                })
-        subs_data.append({
-            "name":sub.name,
-            "posts":posts_data
-        })
-    return Response({
-        "data":subs_data, 
-        }, status=status.HTTP_200_OK)
+            data = post.info(user, [])
+            data.pop('comments')
+            posts_data.append(data)
+        data = sub.info(user, posts_data)
+        data.pop('description')
+        data.pop('members')
+        data.pop('status')
+        subs_data.append(data)
+    return Response(subs_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def reply_comment(request, comment_id, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
+    comment_parent = models.Comment.objects.get(id=comment_id)
+    comment_data = serializers.CommentSerializer(data=request.data)
+    comment_data.is_valid()
+    comment = models.Comment(user=user, post=comment_parent.post, parent=comment_parent, content=comment_data.validated_data['content'])
+    comment.save()
+    return Response({'message': 'success'}, status=status.HTTP_200_OK)

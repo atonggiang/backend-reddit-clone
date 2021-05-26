@@ -6,7 +6,7 @@ urlpatterns = [
     path('register/', views.register_user),
     path('u/profile/', views.view_profile),
     path('u/profile/edit/', views.edit_profile),
-    path('sub/create/', views.create_sub),
+    path('s/create/', views.create_sub),
     path('s/sub/<slug:sub_name>/join/', views.join_sub),
     path('s/sub/<slug:sub_name>/leave/', views.leave_sub),
     path('p/<int:post_id>/comment/', views.comment_post),
@@ -23,4 +23,5 @@ urlpatterns = [
     path('u/sub_list/', views.sub_list),
     path('u/comment_list/', views.comment_list),
     path('', views.home),
+    path('c/<int:comment_id>/reply/', views.reply_comment),
 ]
