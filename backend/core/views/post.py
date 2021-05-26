@@ -39,7 +39,7 @@ def edit_profile(request, *args, **kwargs):
     return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST', 'PUT'])
+@api_view(['POST'])
 def create_sub(request, *args, **kwargs):
     sub_data = serializers.SubSerializer(data=request.data)
     sub_data.is_valid()
