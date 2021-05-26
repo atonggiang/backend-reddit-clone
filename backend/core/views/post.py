@@ -50,6 +50,7 @@ def create_sub(request, *args, **kwargs):
         sub = models.Sub(name=sub_data.validated_data['name'])
         sub.save()
     sub.mods.add(user)
+    sub.members.add(user)
     return Response({'message': 'success',}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])

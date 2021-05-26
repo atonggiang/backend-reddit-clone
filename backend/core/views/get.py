@@ -44,16 +44,6 @@ def comment_list(request, *args, **kwargs):
         comments_data.append(data)
     return Response(comments_data, status=status.HTTP_200_OK)
 
-@api_view(['POST'])
-def reply_comment(request, comment_id, *args, **kwargs):
-    user = models.User.objects.get(username=request.user)
-    comment_parent = models.Comment.objects.get(id=comment_id)
-    comment_data = serializers.CommentSerializer(data=request.data)
-    comment_data.is_valid()
-    comment = models.Comment(user=user, post=comment_parent.post, parent=comment_parent, content=comment_data.validated_data['content'])
-    comment.save()
-    return Response({'message': 'success'}, status=status.HTTP_200_OK)
-
 @api_view(['GET'])
 def view_profile(request, *args, **kwargs):
     user = models.User.objects.get(username=request.user)
@@ -85,7 +75,8 @@ def view_post(request, post_id, *args, **kwargs):
     comments = post.comment_set.all()
     comments_data = []
     for comment in comments:
-        comments_data.append(comment.info(user))
+        if comment.parent is None:
+            comments_data.append(comment.info(user))
     return Response(post.info(user, comments_data), status=status.HTTP_200_OK)
 
 @api_view(['GET'])
