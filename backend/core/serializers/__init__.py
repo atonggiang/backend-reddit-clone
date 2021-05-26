@@ -1,1 +1,1 @@
-from .user_serializer import LoginSerializer, RegisterSerializer, ProfileSerializer, SubSerializer, CommentSerializer
+from .user_serializer import LoginSerializer, RegisterSerializer, ProfileSerializer, SubSerializer, CommentSerializer, PostSerializer

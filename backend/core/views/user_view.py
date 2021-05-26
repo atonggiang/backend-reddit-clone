@@ -88,6 +88,7 @@ def view_comment(request, comment_id, *args, **kwargs):
 
 @api_view(['GET'])
 def view_sub(request, sub_name, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
     sub = models.Sub.objects.get(name=sub_name)
     posts = sub.post_set.all()
     posts_data = []
@@ -96,6 +97,7 @@ def view_sub(request, sub_name, *args, **kwargs):
             "author":post.user.username,
             "title": post.title,
             "content": post.content,
+            "status":post.get_user_status(user),
             "total_vote_count": post.votes.count(),
             "upvote_count": post.votes.count(0),
             "downvote_count": post.votes.count(1),
@@ -106,11 +108,23 @@ def view_sub(request, sub_name, *args, **kwargs):
         "name":sub.name, 
         "description":sub.description,
         "members": sub.members.count(),
+        "status":sub.get_user_status(user),
         "posts": posts_data
         }, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def create_post(request, sub_name, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
+    sub = models.Sub.objects.get(name=sub_name)
+    post_data = serializers.PostSerializer(data=request.data)
+    post_data.is_valid()
+    post = models.Post(user=user, sub=sub, **post_data.validated_data)
+    post.save()
+    return Response({'message': 'success'}, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 def view_post(request, post_id, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
     post = models.Post.objects.get(id=post_id)
     comments = post.comment_set.all()
     comments_data = []
@@ -118,6 +132,7 @@ def view_post(request, post_id, *args, **kwargs):
         comments_data.append({
             "author": comment.user.username,
             "content": comment.content,
+            "status":post.get_user_status(user),
             "total_vote_count": comment.votes.count(),
             "upvote_count": comment.votes.count(0),
             "downvote_count": comment.votes.count(1),
@@ -127,6 +142,7 @@ def view_post(request, post_id, *args, **kwargs):
         "author":post.user.username,
         "title":post.title, 
         "content":post.content,
+        "status":post.get_user_status(user),
         "total_vote_count": post.votes.count(),
         "upvote_count": post.votes.count(0),
         "downvote_count": post.votes.count(1),
@@ -172,6 +188,21 @@ def sub_list(request, *args, **kwargs):
         "subs": subs_data
         }, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def all_sub(request, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
+    subs = models.Sub.objects.all()
+    subs_data = []
+    for sub in subs:
+        subs_data.append({
+            "name": sub.name,
+            "status":sub.get_user_status(user),
+            "link":sub.get_absolute_url()
+            })
+    return Response({
+        "subs": subs_data
+        }, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 def post_list(request, *args, **kwargs):
@@ -183,6 +214,7 @@ def post_list(request, *args, **kwargs):
             "author":post.user.username,
             "title": post.title,
             "content": post.content,
+            "status":post.get_user_status(user),
             "total_vote_count": post.votes.count(),
             "upvote_count": post.votes.count(0),
             "downvote_count": post.votes.count(1),
@@ -202,6 +234,7 @@ def comment_list(request, *args, **kwargs):
         comments_data.append({
             "author": comment.user.username,
             "content": comment.content,
+            "status":comment.get_user_status(user),
             "total_vote_count": comment.votes.count(),
             "upvote_count": comment.votes.count(0),
             "downvote_count": comment.votes.count(1),
@@ -224,6 +257,7 @@ def home(request, *args, **kwargs):
                 "author":post.user.username,
                 "title": post.title,
                 "content": post.content,
+                "status":post.get_user_status(user),
                 "total_vote_count": post.votes.count(),
                 "upvote_count": post.votes.count(0),
                 "downvote_count": post.votes.count(1),

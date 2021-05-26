@@ -33,5 +33,9 @@ class SubSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(max_length=255, required=False)
 
+class PostSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255)
+    content = serializers.CharField(max_length=255)
+
 class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=255)

@@ -12,3 +12,9 @@ class Sub(models.Model):
         db_table = "sub"
     def get_absolute_url(self):
         return "localhost:8000/s/%s/" % self.name
+    def get_user_status(self, user):
+        try:
+            self.members.get(username=user.username)
+            return 'joined'
+        except:
+            return 'not joined'

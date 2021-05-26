@@ -14,3 +14,11 @@ class Post(VoteModel, models.Model):
         db_table = "post"
     def get_absolute_url(self):
         return "localhost:8000/p/%i/" % self.id
+    def get_user_status(self, user):
+        if self.votes.exists(user.id):
+            if self.votes.exists(user.id, 0) == True:
+                return 'up'
+            else:
+                return 'down'
+        else:
+            return 'none'
