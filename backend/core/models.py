@@ -81,12 +81,12 @@ class Sub(models.Model):
             "sub_name":self.name, 
             "description":self.description,
             "members": self.members.count(),
-            "status":self.get_user_status(user),
+            "join_status":self.get_user_join_status(user),
             "url":self.get_absolute_url(),
             "posts": posts
         }
         return data
-    def get_user_status(self, user):
+    def get_user_join_status(self, user):
         try:
             self.members.get(username=user.username)
             return 'joined'
@@ -110,7 +110,7 @@ class Post(VoteModel, models.Model):
             "post_author":self.user.username,
             "title":self.title, 
             "content":self.content,
-            "status":self.get_user_status(user),
+            "vote_status":self.get_user_vote_status(user),
             "total_vote_count": self.votes.count(),
             "upvote_count": self.votes.count(0),
             "downvote_count": self.votes.count(1),
@@ -119,13 +119,12 @@ class Post(VoteModel, models.Model):
             "comments": comments,
         }
         return data
-    def get_user_status(self, user):
+    def get_user_vote_status(self, user):
         if self.votes.exists(user.id):
-            if self.votes.exists(user.id, 0) == True:
                 return 'up'
-            else:
-                return 'down'
         else:
+            if self.votes.exists(user.id, 1) == True:
+                return 'down'
             return 'none'
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -144,7 +143,7 @@ class Comment(MPTTModel,VoteModel, models.Model):
         data = {
             "comment_author": self.user.username,
             "content": self.content,
-            "status":self.get_user_status(user),
+            "status":self.get_user_vote_status(user),
             "total_vote_count": self.votes.count(),
             "upvote_count": self.votes.count(0),
             "downvote_count": self.votes.count(1),
@@ -161,11 +160,10 @@ class Comment(MPTTModel,VoteModel, models.Model):
             children_data.append(child.info(user))
         return children_data
 
-    def get_user_status(self, user):
+    def get_user_vote_status(self, user):
         if self.votes.exists(user.id):
-            if self.votes.exists(user.id, 0) == True:
                 return 'up'
-            else:
-                return 'down'
         else:
+            if self.votes.exists(user.id, 1) == True:
+                return 'down'
             return 'none'
