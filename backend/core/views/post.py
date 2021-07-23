@@ -47,7 +47,7 @@ def create_sub(request, *args, **kwargs):
     if models.Sub.objects.filter(name=sub_data.validated_data['name']).exists():
         sub = models.Sub.objects.get(name=sub_data.validated_data['name'])
     else:
-        sub = models.Sub(name=sub_data.validated_data['name'])
+        sub = models.Sub(**sub_data.validated_data)
         sub.save()
     sub.mods.add(user)
     sub.members.add(user)
