@@ -59,7 +59,8 @@ class Profile(models.Model):
         blank=True
     )
     age = models.PositiveSmallIntegerField(verbose_name='Age', blank=True, null=True)
-    object = ProfileManager()
+    media = models.TextField(verbose_name='Media', blank=True)
+    objects = ProfileManager()
     def __str__(self):
         return self.user.username
     class Meta:
@@ -70,16 +71,19 @@ class Sub(models.Model):
     name = models.CharField(verbose_name='Sub Name', max_length=255, unique=True, blank=False, null=False)
     description = models.CharField(verbose_name='Description', max_length=255, blank=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subs_join', blank=True, null=True)
+    media = models.TextField(verbose_name='Media', blank=True)
     def __str__(self):
         return self.name
     class Meta:
         db_table = "sub"
     def get_absolute_url(self):
-        return "localhost:8000/s/%s/" % self.name
+        return "s/%s/" % self.name
     def info(self, user, posts):
         data = {
+            "id":self.id,
             "sub_name":self.name, 
             "description":self.description,
+            "media":self.media,
             "members": self.members.count(),
             "join_status":self.get_user_join_status(user),
             "url":self.get_absolute_url(),
@@ -98,6 +102,7 @@ class Post(VoteModel, models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     sub = models.ForeignKey(Sub, on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Title', max_length=255, blank=False, null=False)
+    media = models.TextField(verbose_name='Media', blank=True)
     content = models.CharField(verbose_name='Content Post', max_length=255, blank=True)
     def __str__(self):
         return self.title
@@ -107,8 +112,10 @@ class Post(VoteModel, models.Model):
         return "localhost:8000/p/%i/" % self.id
     def info(self, user, comments):
         data = {
+            "id":self.id,
             "post_author":self.user.username,
             "title":self.title, 
+            "media":self.media,
             "content":self.content,
             "vote_status":self.get_user_vote_status(user),
             "total_vote_count": self.votes.count(),
@@ -132,16 +139,19 @@ class Comment(MPTTModel,VoteModel, models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     content = models.CharField(verbose_name='Content Comment', max_length=255, blank=True)
+    media = models.TextField(verbose_name='Media', blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     def __str__(self):
         return self.content
     class Meta:
         db_table = "comment"
     def get_absolute_url(self):
-        return "localhost:8000/c/%i/" % self.id
+        return "c/%i/" % self.id
     def info(self, user):
         data = {
+            "id":self.id,
             "comment_author": self.user.username,
+            "media":self.media,
             "content": self.content,
             "status":self.get_user_vote_status(user),
             "total_vote_count": self.votes.count(),

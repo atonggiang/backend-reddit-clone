@@ -23,6 +23,7 @@ class ProfileSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255, required=False)
     age = serializers.IntegerField(required=False)
     gender = serializers.CharField(max_length=1, required=False)
+    media = serializers.CharField(max_length=255, required=False)
 
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
@@ -32,10 +33,13 @@ class RegisterSerializer(serializers.Serializer):
 class SubSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(max_length=255, required=False)
+    media = serializers.CharField(max_length=255, required=False)
 
 class PostSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     content = serializers.CharField(max_length=255)
+    media = serializers.CharField(max_length=255, required=False)
 
 class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=255)
+    media = serializers.CharField(max_length=255, required=False)

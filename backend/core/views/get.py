@@ -12,7 +12,6 @@ def sub_list(request, *args, **kwargs):
     subs_data = []
     for sub in subs:
         data = sub.info(user, [])
-        data.pop('description')
         data.pop('members')
         data.pop('join_status')
         data.pop('posts')
@@ -53,8 +52,10 @@ def view_profile(request, *args, **kwargs):
 
 @api_view(['GET'])
 def view_comment(request, comment_id, *args, **kwargs):
+    user = models.User.objects.get(username=request.user)
     comment = models.Comment.objects.get(id=comment_id)
-    return Response({"username":comment.user.username, "content":comment.content}, status=status.HTTP_200_OK)
+    data = comment.info(user)
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def view_sub(request, sub_name, *args, **kwargs):
@@ -108,3 +109,41 @@ def post_list(request, *args, **kwargs):
         data.pop('comments')
         posts_data.append(data)
     return Response(posts_data, status=status.HTTP_200_OK)
+
+
+####################### ANONYMOUS ######################
+@api_view(['GET'])
+def view_sub_anonymous(request, sub_name, *args, **kwargs):
+    anonymous = models.User.objects.get(id=1)
+    sub = models.Sub.objects.get(name=sub_name)
+    posts = sub.post_set.all()
+    posts_data = []
+    for post in posts:
+        data = post.info(anonymous, [])
+        data.pop("comments")
+        posts_data.append(data)
+    return Response(sub.info(anonymous, posts_data), status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def view_post_anonymous(request, post_id, *args, **kwargs):
+    anonymous = models.User.objects.get(id=1)
+    post = models.Post.objects.get(id=post_id)
+    comments = post.comment_set.all()
+    comments_data = []
+    for comment in comments:
+        if comment.parent is None:
+            comments_data.append(comment.info(anonymous))
+    return Response(post.info(anonymous, comments_data), status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def all_sub_anonymous(request, *args, **kwargs):
+    anonymous = models.User.objects.get(id=1)
+    subs = models.Sub.objects.all()
+    subs_data = []
+    for sub in subs:
+        data = sub.info(anonymous, [])
+        data.pop('description')
+        data.pop('members')
+        data.pop('posts')
+        subs_data.append(data)
+    return Response(subs_data, status=status.HTTP_200_OK)

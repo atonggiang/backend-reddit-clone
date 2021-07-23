@@ -26,4 +26,10 @@ urlpatterns = [
     path('u/comment_list/', views.comment_list), #GET
     path('', views.home), #GET
     path('c/<int:comment_id>/reply/', views.reply_comment), #POST
+    path('anonymous/s/<slug:sub_name>/', views.view_sub_anonymous), #GET
+    path('anonymous/p/<int:post_id>/', views.view_post_anonymous), #GET
+    path('anonymous/sub/all/', views.all_sub_anonymous), #GET
+    path('p/<int:post_id>/edit/', views.edit_post), #POST
+    path('c/<int:comment_id>/edit/', views.edit_comment), #POST
+    path('s/<slug:sub_name>/edit/', views.edit_subdescription), #POST
 ]
