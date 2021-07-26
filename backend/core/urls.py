@@ -32,4 +32,7 @@ urlpatterns = [
     path('p/<int:post_id>/edit/', views.edit_post), #POST
     path('c/<int:comment_id>/edit/', views.edit_comment), #POST
     path('s/<slug:sub_name>/edit/', views.edit_subdescription), #POST
+    path('p/<int:post_id>/delete/', views.delete_post), #POST
+    path('s/<slug:sub_name>/delete/', views.delete_sub), #POST
+    path('p/search/',views.search_post) #GET
 ]

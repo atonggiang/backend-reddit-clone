@@ -147,3 +147,26 @@ def all_sub_anonymous(request, *args, **kwargs):
         data.pop('posts')
         subs_data.append(data)
     return Response(subs_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def search_post(request, *args, **kwargs):
+    #params: content
+    user = models.User.objects.get(username=request.user)
+    subs = user.subs_join.all()
+    subs_data = []
+    content = request.GET['content']
+    for sub in subs:
+        posts = sub.post_set.all()
+        posts_data = []
+        for post in posts:
+            data = post.info(user, [])
+            data.pop('comments')
+            posts_data.append(data)
+        posts_data = filter(lambda x: content.lower() in x['title'].lower(), posts_data)
+        data = sub.info(user, posts_data)
+        data.pop('description')
+        data.pop('members')
+        data.pop('join_status')
+        subs_data.append(data)
+
+    return Response(subs_data, status=status.HTTP_200_OK)

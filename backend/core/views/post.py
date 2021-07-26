@@ -153,3 +153,16 @@ def edit_subdescription(request, sub_name, *args, **kwargs):
     edit_content.is_valid()
     post = models.Sub.objects.update_or_create({**edit_content.validated_data}, name=sub_name)
     return Response({'message': 'success'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def delete_post(request, post_id, *args, **kwargs):
+    post = models.Post.objects.filter(id=post_id).delete()
+    return Response({'message': 'success'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def delete_sub(request, sub_name, *args, **kwargs):
+    sub = models.Sub.objects.filter(name=sub_name).delete()
+    return Response({'message': 'success'}, status=status.HTTP_200_OK)
+
+
+
