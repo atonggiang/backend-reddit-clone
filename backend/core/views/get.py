@@ -168,5 +168,12 @@ def search_post(request, *args, **kwargs):
         data.pop('members')
         data.pop('join_status')
         subs_data.append(data)
-
     return Response(subs_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_all_user(request, *args, **kwargs):
+    users = models.User.objects.all()
+    print ("xnxx177", users)
+    return Response('users', status=status.HTTP_200_OK)
+

@@ -34,5 +34,6 @@ urlpatterns = [
     path('s/<slug:sub_name>/edit/', views.edit_subdescription), #POST
     path('p/<int:post_id>/delete/', views.delete_post), #POST
     path('s/<slug:sub_name>/delete/', views.delete_sub), #POST
-    path('p/search/',views.search_post) #GET
+    path('p/search/',views.search_post), #GET
+    path('u/all_user/', views.get_all_user), #GET
 ]

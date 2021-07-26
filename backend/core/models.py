@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
         return self._create_user(username, password, True, True, **kwargs)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(verbose_name='User Name', max_length=255, default='Nguyen Van A', unique=True)
+    username = models.CharField(verbose_name='User Name', max_length=10000, default='Nguyen Van A', unique=True)
     USERNAME_FIELD = 'username'
     is_active = models.BooleanField(verbose_name='Is Active', default=True)
     is_staff = models.BooleanField(verbose_name='Is Staff', default=False)
@@ -44,8 +44,8 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    email = models.EmailField(verbose_name='Email Address',max_length=254, blank=True)
-    name = models.CharField(verbose_name='Your Name', max_length=254, blank=True)
+    email = models.EmailField(verbose_name='Email Address',max_length=10000, blank=True)
+    name = models.CharField(verbose_name='Your Name', max_length=10000, blank=True)
     MALE = 'M'
     FEMALE = 'F'
     GENDER_CHOICE = [
@@ -68,8 +68,8 @@ class Profile(models.Model):
 
 class Sub(models.Model):
     mods = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subs_mod')
-    name = models.CharField(verbose_name='Sub Name', max_length=255, unique=True, blank=False, null=False)
-    description = models.CharField(verbose_name='Description', max_length=255, blank=True)
+    name = models.CharField(verbose_name='Sub Name', max_length=10000, unique=True, blank=False, null=False)
+    description = models.CharField(verbose_name='Description', max_length=10000, blank=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subs_join', blank=True, null=True)
     media = models.TextField(verbose_name='Media', blank=True)
     def __str__(self):
@@ -101,9 +101,9 @@ from vote.models import VoteModel
 class Post(VoteModel, models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     sub = models.ForeignKey(Sub, on_delete=models.CASCADE)
-    title = models.CharField(verbose_name='Title', max_length=255, blank=False, null=False)
+    title = models.CharField(verbose_name='Title', max_length=10000, blank=False, null=False)
     media = models.TextField(verbose_name='Media', blank=True)
-    content = models.CharField(verbose_name='Content Post', max_length=255, blank=True)
+    content = models.CharField(verbose_name='Content Post', max_length=10000, blank=True)
     def __str__(self):
         return self.title
     class Meta:
@@ -138,7 +138,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 class Comment(MPTTModel,VoteModel, models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    content = models.CharField(verbose_name='Content Comment', max_length=255, blank=True)
+    content = models.CharField(verbose_name='Content Comment', max_length=10000, blank=True)
     media = models.TextField(verbose_name='Media', blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     def __str__(self):
